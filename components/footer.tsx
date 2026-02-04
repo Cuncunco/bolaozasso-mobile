@@ -12,13 +12,17 @@ const styles = StyleSheet.create({
   footer: {
     paddingVertical: 12,
     paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
+
+    
+    backgroundColor: "#09090A", 
+
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 250, 250, 0)",
-    backgroundColor: "#ffffff00",
+    borderTopColor: "rgba(255,255,255,0.1)",
   },
   text: {
-    textAlign: "center",
     fontSize: 12,
-    opacity: 0.7,
+    color: "rgba(255,255,255,0.7)",
   },
 });
