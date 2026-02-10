@@ -1,6 +1,7 @@
 {
   "expo": {
-    "name": "bolaozasso-mobile",
+    "owner": "cuncunco",
+    "name": "bolaozassomobile",
     "slug": "bolaozasso-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,7 +28,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

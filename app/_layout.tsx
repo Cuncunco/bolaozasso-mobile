@@ -2,6 +2,7 @@ import { Slot } from "expo-router";
 import { NativeBaseProvider } from "native-base";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, View } from "react-native";
+import { AuthContextProvider } from "../contexts/AuthContext";
 
 import { useFonts, Roboto_400Regular, Roboto_500Medium, Roboto_700Bold } from "@expo-google-fonts/roboto";
 import * as SplashScreen from "expo-splash-screen";
@@ -23,6 +24,7 @@ export default function RootLayout() {
   SplashScreen.hideAsync();
 
   return (
+  <AuthContextProvider>
     <NativeBaseProvider theme={THEME}>
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
@@ -31,7 +33,8 @@ export default function RootLayout() {
         <Footer />
       </SafeAreaView>
     </NativeBaseProvider>
-  );
+  </AuthContextProvider>
+);
 }
 
 const styles = StyleSheet.create({
