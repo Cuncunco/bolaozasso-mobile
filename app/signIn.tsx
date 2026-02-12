@@ -1,16 +1,20 @@
-import { Fontisto } from "@expo/vector-icons";
+import { useContext } from "react";
 import { Center, Text, Icon } from "native-base";
+import { Fontisto } from "@expo/vector-icons";
+import { router } from "expo-router";
+
+import { AuthContext } from "../contexts/AuthContext";
 import Logo from "../assets/images/logo.svg";
 import { Button } from "../components/button";
-import { router } from "expo-router";
-import { useContext } from "react";
-import { AuthContext } from "../contexts/authContext";
 
 export default function SignIn() {
-  const { signIn, user } = useContext(AuthContext); 
+    const ctx = useContext(AuthContext);
+    console.log("AUTH CTX =>", ctx);
+
+  const { signIn } = useContext(AuthContext);
 
   async function handleSignIn() {
-    const ok = await signIn(); // ✅ aqui só chama função normal
+    const ok = await signIn();
     if (ok) router.replace("/(tabs)");
   }
 
@@ -26,8 +30,7 @@ export default function SignIn() {
       />
 
       <Text color="white" textAlign="center" mt={5}>
-        Não utilizamos nenhuma informação além {"\n"} do seu e-mail para criação de
-        sua conta.
+        Não utilizamos nenhuma informação além {"\n"} do seu e-mail.
       </Text>
     </Center>
   );

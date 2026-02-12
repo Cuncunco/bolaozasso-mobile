@@ -13,7 +13,7 @@ interface UserProps {
 export interface AuthContextDataProps {
   user: UserProps | null;
   isUserLoading: boolean;
-  signIn: () => Promise<void>;
+  signIn: () => Promise<boolean>;
 }
 
 interface AuthProviderProps {
@@ -39,19 +39,28 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
     scopes: ["profile", "email"],
   });
 
-  async function signIn() {
-    try {
-      setIsUserLoading(true);
-      const result = await promptAsync();
-      console.log("AUTH RESULT:", result);
-    } catch (error) {
-      console.log("AUTH ERROR:", error);
-      throw error;
-    } finally {
-      setIsUserLoading(false);
-    }
-  }
+  async function signIn(): Promise<boolean> {
+  try {
+    setIsUserLoading(true);
 
+    const result = await promptAsync();
+
+    if (result.type !== "success") return false;
+
+    const token =
+      result.authentication?.accessToken ??
+      (result.params as any)?.access_token;
+
+    if (!token) return false;
+
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  } finally {
+    setIsUserLoading(false);
+  }
+}
   useEffect(() => {
     async function handleGoogleResponse() {
       console.log("AUTH RESPONSE:", response);

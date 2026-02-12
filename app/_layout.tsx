@@ -8,6 +8,7 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { THEME } from "../theme";
 import { Footer } from "../components/footer";
+import { AuthContextProvider } from "@/contexts/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,12 +25,14 @@ export default function RootLayout() {
 
   return (
     <NativeBaseProvider theme={THEME}>
+      <AuthContextProvider>
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
           <Slot />
         </View>
         <Footer />
       </SafeAreaView>
+      </AuthContextProvider>
     </NativeBaseProvider>
   );
 }
