@@ -3,17 +3,11 @@ import { NativeBaseProvider } from "native-base";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, View } from "react-native";
 
-import {
-  useFonts,
-  Roboto_400Regular,
-  Roboto_500Medium,
-  Roboto_700Bold,
-} from "@expo-google-fonts/roboto";
+import { useFonts, Roboto_400Regular, Roboto_500Medium, Roboto_700Bold } from "@expo-google-fonts/roboto";
 import * as SplashScreen from "expo-splash-screen";
 
 import { THEME } from "../theme";
 import { Footer } from "../components/footer";
-import { AuthContextProvider } from "../contexts/authContext"; 
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,14 +24,12 @@ export default function RootLayout() {
 
   return (
     <NativeBaseProvider theme={THEME}>
-      <AuthContextProvider>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.content}>
-            <Slot />
-          </View>
-          <Footer />
-        </SafeAreaView>
-      </AuthContextProvider>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <Slot />
+        </View>
+        <Footer />
+      </SafeAreaView>
     </NativeBaseProvider>
   );
 }

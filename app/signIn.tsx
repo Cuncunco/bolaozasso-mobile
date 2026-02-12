@@ -10,7 +10,7 @@ export default function SignIn() {
   const { signIn, user } = useContext(AuthContext); 
 
   async function handleSignIn() {
-    const ok = await signIn(); 
+    const ok = await signIn(); // ✅ aqui só chama função normal
     if (ok) router.replace("/(tabs)");
   }
 
