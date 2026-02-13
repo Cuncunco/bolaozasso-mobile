@@ -1,5 +1,16 @@
 import { Redirect } from "expo-router";
+import { useAuth } from "../hooks/useAuth";
+
+const DEV_BYPASS_AUTH = true; // <-- mude pra false quando voltar o login
 
 export default function Index() {
-  return <Redirect href="/signIn" />;
+  const { user, isUserLoading } = useAuth();
+
+  if (DEV_BYPASS_AUTH) {
+    return <Redirect href="/(tabs)/new" />; // ou "/(tabs)" se quiser abrir a aba
+  }
+
+  if (isUserLoading) return null;
+
+  return user ? <Redirect href="/(tabs)" /> : <Redirect href="/signIn" />;
 }

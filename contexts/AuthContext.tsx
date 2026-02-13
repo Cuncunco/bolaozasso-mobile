@@ -27,7 +27,7 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
 
   
-  const redirectUri = "https://auth.expo.io/@cuncunco/bolaozasso-mobile/auth";
+  const redirectUri = "https://auth.expo.io/@cuncunco/bolaozasso-mobile/";
   console.log("REDIRECT URI:", redirectUri);
 
   const WEB_CLIENT_ID =
@@ -61,7 +61,6 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
       const accessToken = response.authentication?.accessToken;
       if (!accessToken) return;
 
-      // 1) pegar dados do user
       const userInfoResponse = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
         {

@@ -11,7 +11,6 @@ type Props = {
 export function Flag({ team, variant = "round", size = 56 }: Props) {
   const SvgFlag = getFlag(team, variant)
 
-  // placeholder quando não tem time (ou não achou no map)
   if (!SvgFlag) {
     return (
       <View

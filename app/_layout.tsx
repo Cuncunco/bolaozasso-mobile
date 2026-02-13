@@ -23,17 +23,17 @@ export default function RootLayout() {
 
   SplashScreen.hideAsync();
 
-  return (
-  <AuthContextProvider>
-    <NativeBaseProvider theme={THEME}>
+  return ( 
+ <NativeBaseProvider theme={THEME}>
+    <AuthContextProvider>
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
           <Slot />
         </View>
         <Footer />
       </SafeAreaView>
-    </NativeBaseProvider>
-  </AuthContextProvider>
+   </AuthContextProvider>
+   </NativeBaseProvider>
 );
 }
 
