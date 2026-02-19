@@ -7,10 +7,10 @@ export default function Index() {
   const { user, isUserLoading } = useAuth();
 
   if (DEV_BYPASS_AUTH) {
-    return <Redirect href="/(tabs)/new" />; // ou "/(tabs)" se quiser abrir a aba
+    return <Redirect href="/(tabs)/pools" />; // ou "/(tabs)" se quiser abrir a aba
   }
 
   if (isUserLoading) return null;
 
-  return user ? <Redirect href="/(tabs)" /> : <Redirect href="/signIn" />;
+  return user ? <Redirect href="/(tabs)/pools" /> : <Redirect href="/signIn" />;
 }

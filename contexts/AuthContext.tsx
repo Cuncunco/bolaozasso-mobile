@@ -1,88 +1,116 @@
-import * as AuthSession from "expo-auth-session";
-import * as Google from "expo-auth-session/providers/google";
-import * as WebBrowser from "expo-web-browser";
 import { createContext, ReactNode, useEffect, useState } from "react";
-
-WebBrowser.maybeCompleteAuthSession();
+import { router } from "expo-router";
+import { api } from "../lib/api";
+import { saveToken, getToken, deleteToken } from "../storage/token";
 
 interface UserProps {
-  name: string;
-  avatarUrl: string;
+  id: string;
+  name?: string | null;
+  email: string;
+  avatarUrl?: string | null;
 }
 
 export interface AuthContextDataProps {
   user: UserProps | null;
   isUserLoading: boolean;
-  signIn: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (name: string | undefined, email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
+type AuthResponse = {
+  user: UserProps;
+  token: string;
+};
+
 export const AuthContext = createContext({} as AuthContextDataProps);
 
 export function AuthContextProvider({ children }: AuthProviderProps) {
-  const [isUserLoading, setIsUserLoading] = useState(false);
   const [user, setUser] = useState<UserProps | null>(null);
+  const [isUserLoading, setIsUserLoading] = useState(true);
 
-  
-  const redirectUri = "https://auth.expo.io/@cuncunco/bolaozasso-mobile/";
-  console.log("REDIRECT URI:", redirectUri);
+  // 🔄 Verifica se já existe token salvo ao abrir o app
+  useEffect(() => {
+    async function loadUser() {
+      const token = await getToken();
 
-  const WEB_CLIENT_ID =
-    "82318742844-brvpt68o12c1tbh0gjqlota7i6n7h3sf.apps.googleusercontent.com";
+      if (token) {
+        try {
+          // opcional: você pode criar rota /me no backend
+          const { data } = await api.get<UserProps>("/me");
+          setUser(data);
+        } catch {
+          await deleteToken();
+        }
+      }
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: WEB_CLIENT_ID,
-    redirectUri,
-    scopes: ["profile", "email"],
-  });
+      setIsUserLoading(false);
+    }
 
-  async function signIn() {
+    loadUser();
+  }, []);
+
+  async function signIn(email: string, password: string) {
+    setIsUserLoading(true);
+
     try {
-      setIsUserLoading(true);
-      const result = await promptAsync();
-      console.log("AUTH RESULT:", result);
-    } catch (error) {
-      console.log("AUTH ERROR:", error);
-      throw error;
+      const { data } = await api.post<AuthResponse>("/login", {
+        email,
+        password,
+      });
+
+      await saveToken(data.token);
+      setUser(data.user);
+
+      router.replace("/(tabs)/new"); // ajuste se quiser outra rota
     } finally {
       setIsUserLoading(false);
     }
   }
 
-  useEffect(() => {
-    async function handleGoogleResponse() {
-      console.log("AUTH RESPONSE:", response);
+  async function signUp(
+    name: string | undefined,
+    email: string,
+    password: string
+  ) {
+    setIsUserLoading(true);
 
-      if (response?.type !== "success") return;
-
-      const accessToken = response.authentication?.accessToken;
-      if (!accessToken) return;
-
-      const userInfoResponse = await fetch(
-        "https://www.googleapis.com/userinfo/v2/me",
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-
-      const userInfo = await userInfoResponse.json();
-
-      setUser({
-        name: userInfo.name,
-        avatarUrl: userInfo.picture,
+    try {
+      const { data } = await api.post<AuthResponse>("/register", {
+        name,
+        email,
+        password,
       });
 
-  
-    }
+      await saveToken(data.token);
+      setUser(data.user);
 
-    handleGoogleResponse();
-  }, [response]);
+      router.replace("/(tabs)/new");
+    } finally {
+      setIsUserLoading(false);
+    }
+  }
+
+  async function signOut() {
+    await deleteToken();
+    setUser(null);
+    router.replace("/signIn");
+  }
 
   return (
-    <AuthContext.Provider value={{ signIn, isUserLoading, user }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isUserLoading,
+        signIn,
+        signUp,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
