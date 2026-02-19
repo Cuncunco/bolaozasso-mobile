@@ -2,13 +2,13 @@ import { Slot } from "expo-router";
 import { NativeBaseProvider } from "native-base";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, View } from "react-native";
-import { AuthContextProvider } from "../contexts/AuthContext";
 
 import { useFonts, Roboto_400Regular, Roboto_500Medium, Roboto_700Bold } from "@expo-google-fonts/roboto";
 import * as SplashScreen from "expo-splash-screen";
 
 import { THEME } from "../theme";
 import { Footer } from "../components/footer";
+import { AuthContextProvider } from "@/contexts/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
 

@@ -5,7 +5,11 @@
     "strict": true,
     "noEmit": true,
     "moduleResolution": "bundler",
-    "types": ["expo-router/types"]
+    "types": ["expo-router/types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "**/*.ts",

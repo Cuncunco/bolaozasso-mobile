@@ -2,7 +2,7 @@ import { ScrollView, Text, VStack } from "native-base";
 import { calendar } from "../../constants/calendar";
 import { CardDay } from "../../components/CardDay";
 
-export default function HomeScreen() {
+export default function Calendar() {
   return (
     <ScrollView flex={1} bg="gray.950">
       <VStack px={4} space={4} pb={8}>
