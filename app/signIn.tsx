@@ -1,17 +1,24 @@
 import { Fontisto } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { Center, Icon, Text } from "native-base";
+import { useContext } from "react";
 import Logo from "../assets/images/logo.svg";
-import { Button } from "../components/Button";
+import { Button } from "../components/button";
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function SignIn() {
+  const router = useRouter();
+
   const ctx = useContext(AuthContext);
   console.log("AUTH CTX =>", ctx);
 
   const { signIn } = useContext(AuthContext);
 
   async function handleSignIn() {
-    const ok = await signIn();
-    if (ok) router.replace("/(tabs)");
+    const ok = await signIn("teste@teste.com", "123456");
+    if (ok !== undefined) {
+      router.replace("/(tabs)");
+    }
   }
 
   return (
