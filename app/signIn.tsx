@@ -1,12 +1,11 @@
-import { Fontisto } from '@expo/vector-icons';
+import { Fontisto } from "@expo/vector-icons";
 import { Center, Icon, Text } from "native-base";
-import Logo from '../assets/images/logo.svg';
+import Logo from "../assets/images/logo.svg";
 import { Button } from "../components/Button";
-import { useAuth } from "../hooks/useAuth";
 
 export default function SignIn() {
-    const ctx = useContext(AuthContext);
-    console.log("AUTH CTX =>", ctx);
+  const ctx = useContext(AuthContext);
+  console.log("AUTH CTX =>", ctx);
 
   const { signIn } = useContext(AuthContext);
 
@@ -15,10 +14,9 @@ export default function SignIn() {
     if (ok) router.replace("/(tabs)");
   }
 
-    return (
-            <Center flex={1} bgColor="gray.900" p={7}>
-                     
-              <Logo width={300} height={200}/>
+  return (
+    <Center flex={1} bgColor="gray.900" p={7}>
+      <Logo width={300} height={200} />
 
       <Button
         title="ENTRAR COM GOOGLE"
