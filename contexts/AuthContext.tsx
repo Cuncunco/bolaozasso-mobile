@@ -66,7 +66,7 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
       await saveToken(data.token);
       setUser(data.user);
 
-      router.replace("/(tabs)/new"); // ajuste se quiser outra rota
+      router.replace("/(tabs)/new"); 
     } finally {
       setIsUserLoading(false);
     }

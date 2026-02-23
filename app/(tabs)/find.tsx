@@ -2,9 +2,16 @@ import { Heading, VStack } from "native-base";
 import { Button } from "../../components/button";
 import { Header } from "../../components/Header";
 import { Input } from "../../components/Input";
+import { Tabs } from "expo-router";
 
 export default function Find() {
   return (
+    <>
+    <Tabs.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
     <VStack flex={1} bgColor="gray.900">
       <Header title="Buscar por código" showBackButton />
 
@@ -17,5 +24,6 @@ export default function Find() {
         <Button title="BUSCAR BOLÃO" />
       </VStack>
     </VStack>
+    </>
   );
 }
