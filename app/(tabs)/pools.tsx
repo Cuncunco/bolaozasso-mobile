@@ -5,9 +5,11 @@ import { Button } from "../../components/button";
 import { Header } from "../../components/Header";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "@/lib/api";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { PoolCard, PoolPros } from "@/components/PoolCard";
 import { Loading } from "@/components/Loading";
+import { EmptyPoolList } from "@/components/EmptyPoolList";
+import { useFocusEffect, } from "@react-navigation/native";
 
 export default function Pools() {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,9 +38,9 @@ export default function Pools() {
     }
   }
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     fetchPools();
-  }, [])
+  }, []))
 
   return (
     <VStack flex={1} bgColor="gray.900">
@@ -58,11 +60,17 @@ export default function Pools() {
         />
       </VStack>
 
-    <FlatList
+
+    {
+      isLoading ? <Loading /> :
+      <FlatList
       data={pools}
       keyExtractor={item => item.id}
       renderItem={({ item }) => <PoolCard data={item}/>}
-    />
+      contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 60}}
+      showsVerticalScrollIndicator={false}
+      ListEmptyComponent={() => <EmptyPoolList/>}
+    />}
     </VStack>
   );
 }

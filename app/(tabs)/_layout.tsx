@@ -11,14 +11,14 @@ export default function TabsLayout() {
         headerTitleAlign: "center",
         headerShadowVisible: false,
 
-        tabBarShowLabel: true, // ou false se o vídeo não mostra texto
+        tabBarShowLabel: true, 
         tabBarActiveTintColor: "#F7DD43",
         tabBarInactiveTintColor: "#9CA3AF",
         tabBarStyle: { 
           position: "absolute",
           backgroundColor: "#1a1818f6",
           height: 70,
-          borderTopWidth: 0 }, // ajuste se quiser
+          borderTopWidth: 0 }, 
       }}
       >
       <Tabs.Screen

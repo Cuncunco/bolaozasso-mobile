@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { router } from "expo-router";
 import { api } from "../lib/api";
 import { saveToken, getToken, deleteToken } from "../storage/token";
+import { saveUser, getUser, deleteUser } from "../storage/user";
 
 interface UserProps {
   id: string;
@@ -14,7 +14,11 @@ export interface AuthContextDataProps {
   user: UserProps | null;
   isUserLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (name: string | undefined, email: string, password: string) => Promise<void>;
+  signUp: (
+    name: string | undefined,
+    email: string,
+    password: string
+  ) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -29,29 +33,35 @@ type AuthResponse = {
 
 export const AuthContext = createContext({} as AuthContextDataProps);
 
+function setAuthHeader(token: string | null) {
+  if (token) {
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common.Authorization;
+  }
+}
+
 export function AuthContextProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
 
-  // 🔄 Verifica se já existe token salvo ao abrir o app
+  // 🔥 BOOTSTRAP
   useEffect(() => {
-    async function loadUser() {
-      const token = await getToken();
+    async function bootstrap() {
+      try {
+        const token = await getToken();
+        const storedUser = await getUser();
 
-      if (token) {
-        try {
-          // opcional: você pode criar rota /me no backend
-          const { data } = await api.get<UserProps>("/me");
-          setUser(data);
-        } catch {
-          await deleteToken();
+        if (token && storedUser) {
+          setAuthHeader(token);
+          setUser(storedUser);
         }
+      } finally {
+        setIsUserLoading(false);
       }
-
-      setIsUserLoading(false);
     }
 
-    loadUser();
+    bootstrap();
   }, []);
 
   async function signIn(email: string, password: string) {
@@ -64,9 +74,10 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
       });
 
       await saveToken(data.token);
-      setUser(data.user);
+      await saveUser(data.user);
 
-      router.replace("/(tabs)/new"); 
+      setAuthHeader(data.token);
+      setUser(data.user);
     } finally {
       setIsUserLoading(false);
     }
@@ -87,9 +98,10 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
       });
 
       await saveToken(data.token);
-      setUser(data.user);
+      await saveUser(data.user);
 
-      router.replace("/(tabs)/new");
+      setAuthHeader(data.token);
+      setUser(data.user);
     } finally {
       setIsUserLoading(false);
     }
@@ -97,8 +109,10 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
 
   async function signOut() {
     await deleteToken();
+    await deleteUser();
+
+    setAuthHeader(null);
     setUser(null);
-    router.replace("/signIn");
   }
 
   return (
