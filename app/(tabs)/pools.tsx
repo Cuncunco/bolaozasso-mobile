@@ -1,50 +1,51 @@
 import { Octicons } from "@expo/vector-icons";
 import { Icon, useToast, VStack } from "native-base";
-import { FlatList } from "react-native"
+import { FlatList } from "react-native";
 import { Button } from "../../components/button";
 import { Header } from "../../components/Header";
-import { useNavigation } from "@react-navigation/native";
 import { api } from "@/lib/api";
-import { useCallback, useState } from "react";
-import { PoolCard, PoolPros } from "@/components/PoolCard";
+import { useCallback, useEffect, useState } from "react";
+import { PoolCard, PoolProps } from "@/components/PoolCard";
 import { Loading } from "@/components/Loading";
 import { EmptyPoolList } from "@/components/EmptyPoolList";
-import { useFocusEffect, } from "@react-navigation/native";
+import { useRouter, useFocusEffect } from "expo-router";
 
 export default function Pools() {
   const [isLoading, setIsLoading] = useState(true);
-  const [pools, setPools] = useState<PoolPros[]>([])
+  const [pools, setPools] = useState<PoolProps[]>([]);
+  const router = useRouter();
 
-  const { navigate } = useNavigation();
   const toast = useToast();
 
-  async function fetchPools(){
+  const fetchPools = useCallback(async () => {
     try {
       setIsLoading(true);
-     const response = await api.get('/pools')
-     setPools(response.data.pools)
 
-    } catch(error) {
-      console.log(error)
+      const response = await api.get("/pools");
+      setPools(response.data.pools);
+    } catch (error) {
+      console.log(error);
 
       toast.show({
-        title: 'Não foi possível carregar os bolões',
-        placement: 'top',
-        bgColor: 'red.500'
-      })
-
+        title: "Não foi possível carregar os bolões",
+        placement: "top",
+        bgColor: "red.500",
+      });
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [toast]);
 
-  useFocusEffect(useCallback(() => {
-    fetchPools();
-  }, []))
+  useFocusEffect(
+    useCallback(() => {
+      fetchPools();
+    }, [fetchPools])
+  );
 
   return (
     <VStack flex={1} bgColor="gray.900">
-      <Header title="Meus bolões" />
+      <Header title="Meus bolões" onShare={() => {}}/>
+
       <VStack
         mt={6}
         mx={5}
@@ -56,21 +57,32 @@ export default function Pools() {
         <Button
           title="Buscar bolão por código"
           leftIcon={<Icon as={Octicons} name="search" color="black" />}
-          onPress={() => navigate('find')}
+          onPress={() => router.push("/(tabs)/find")}
         />
       </VStack>
 
-
-    {
-      isLoading ? <Loading /> :
-      <FlatList
-      data={pools}
-      keyExtractor={item => item.id}
-      renderItem={({ item }) => <PoolCard data={item}/>}
-      contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 60}}
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={() => <EmptyPoolList/>}
-    />}
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={pools}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <PoolCard
+              data={item}
+              onPress={() =>
+                router.push({
+                  pathname: "/(tabs)/details",
+                  params: { id: item.id },
+                })
+              }
+            />
+          )}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 60 }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => <EmptyPoolList />}
+        />
+      )}
     </VStack>
   );
 }

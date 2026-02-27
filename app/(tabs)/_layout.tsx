@@ -45,7 +45,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="new"
         options={{
-          title: "new",
+          title: "Criar",
           headerShown: false,
           tabBarIcon: ({ color, size }) => <PlusCircle color={color} size={size} weight="fill" />,
         }}
@@ -54,7 +54,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="pools"
         options={{
-          title: "bolões",
+          title: "Bolões",
           tabBarIcon: ({ color, size }) => <SoccerBall color={color} size={size} weight="fill" />,
         }}
       />
@@ -62,7 +62,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="calendar"
         options={{
-          title: "calendar",
+          title: "Calendario",
           tabBarIcon: ({ color, size }) => <CalendarBlank color={color} size={size} weight="fill" />,
         }}
       />
@@ -70,8 +70,15 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="find"
         options={{
-          title: "find",
+          title: "Encontrar",
           tabBarIcon: ({ color, size }) => <MagnifyingGlass color={color} size={size} weight="fill" />,
+        }}
+      />
+
+      <Tabs.Screen
+        name="details"
+        options={{
+          href: null, // ✅ tira do menu de tabs
         }}
       />
     </Tabs>
