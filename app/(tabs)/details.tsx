@@ -23,34 +23,37 @@ type PoolDetails = {
 };
 
 export default function Details() {
-  const [optionSelected, setOptionSelected] = useState<'Seus palpites' | 'Ranking do grupo'>('Seus palpites')
+  const [optionSelected, setOptionSelected] = useState<
+    "Seus palpites" | "Ranking do grupo"
+  >("Seus palpites");
+
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
+
   const [poolDetails, setPoolDetails] = useState<PoolDetails | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
   async function handleCodeShare() {
-  const code = poolDetails?.code;
+    const code = poolDetails?.code;
 
-  if (!code) {
-    toast.show({
-      title: "Carregando código do bolão...",
-      placement: "top",
-      bgColor: "red.500",
-    });
-    return;
+    if (!code) {
+      toast.show({
+        title: "Carregando código do bolão...",
+        placement: "top",
+        bgColor: "red.500",
+      });
+      return;
+    }
+
+    await Share.share({ message: code });
   }
-
-  await Share.share({ message: code });
-}
 
   async function fetchPoolsDetails(poolId: string) {
     try {
       setIsLoading(true);
 
       const response = await api.get(`/pools/${poolId}`);
-
       setPoolDetails(response.data.pool);
     } catch (error) {
       console.log("POOL DETAILS ERROR:", error);
@@ -82,29 +85,32 @@ export default function Details() {
         onShare={handleCodeShare}
       />
 
-      
-
-
       {isLoading ? (
         <Loading />
       ) : poolDetails ? (
         poolDetails._count.participants > 0 ? (
           <VStack px={5} flex={1}>
-           
             <PoolHeader data={poolDetails as any} />
+
             <HStack bgColor="gray.800" p={1} rounded="sm" mb={5}>
-            <Option 
-            title="Seus palpites"
-            isSelected={optionSelected === 'Seus palpites'}
-            onPress={() => setOptionSelected('Seus palpites')}
-            />
-            <Option 
-            title="Ranking do grupo" 
-            isSelected={optionSelected === 'Ranking do grupo'}
-            onPress={() => setOptionSelected('Ranking do grupo')}
-            />
+              <Option
+                title="Seus palpites"
+                isSelected={optionSelected === "Seus palpites"}
+                onPress={() => setOptionSelected("Seus palpites")}
+              />
+              <Option
+                title="Ranking do grupo"
+                isSelected={optionSelected === "Ranking do grupo"}
+                onPress={() => setOptionSelected("Ranking do grupo")}
+              />
             </HStack>
-            <Guesses poolId={poolDetails.id}/>
+
+            {optionSelected === "Seus palpites" ? (
+              <Guesses poolId={poolDetails.id} />
+            ) : (
+              
+              <VStack flex={1} />
+            )}
           </VStack>
         ) : (
           <EmptyMyPoolList code={poolDetails.code} />

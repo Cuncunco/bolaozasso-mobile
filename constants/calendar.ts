@@ -12,7 +12,7 @@ export type Card = {
 
 export const calendar: Card[] = [
   {
-    date: "11/06",
+    date: "11-06",
     day: "Quinta",
     games: [
       { player1: "mexico", hour: "16:00", player2: "south-africa" },
@@ -20,7 +20,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "12/06",
+    date: "12-06",
     day: "Sexta",
     games: [
       { player1: "canada", hour: "12:00" },
@@ -28,7 +28,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "13/06",
+    date: "13-06",
     day: "Sábado",
     games: [
       { player1: "qatar", hour: "16:00", player2: "switzerland" },
@@ -38,7 +38,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "14/06",
+    date: "14-06",
     day: "Domingo",
     games: [
       { player1: "germany", hour: "14:00", player2: "curaçao" },
@@ -48,7 +48,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "15/06",
+    date: "15-06",
     day: "Segunda",
     games: [
       { player1: "spain", hour: "13:00", player2: "cabo-verde" },
@@ -68,7 +68,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "17/06",
+    date: "17-06",
     day: "Quarta",
     games: [
       { player1: "portugal", hour: "14:00" },
@@ -78,7 +78,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "18/06",
+    date: "18-06",
     day: "Quinta",
     games: [
       { hour: "13:00", player2: "south-africa" },
@@ -88,7 +88,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "19/06",
+    date: "19-06",
     day: "Sexta",
     games: [
       { player1: "usa", hour: "16:00", player2: "australia" },
@@ -98,7 +98,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "20/06",
+    date: "20-06",
     day: "Sábado",
     games: [
       { player1: "netherlands", hour: "14:00" },
@@ -108,7 +108,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "21/06",
+    date: "21-06",
     day: "Domingo",
     games: [
       { player1: "spain", hour: "13:00", player2: "saudi-arabia" },
@@ -118,7 +118,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "22/06",
+    date: "22-06",
     day: "Segunda",
     games: [
       { player1: "argentina", hour: "14:00", player2: "austria" },
@@ -128,7 +128,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "23/06",
+    date: "23-06",
     day: "Terça",
     games: [
       { player1: "portugal", hour: "14:00", player2: "uzbekistan" },
@@ -138,7 +138,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "24/06",
+    date: "24-06",
     day: "Quarta",
     games: [
       { player1: "switzerland", hour: "16:00", player2: "canada" },
@@ -150,7 +150,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "25/06",
+    date: "25-06",
     day: "Quinta",
     games: [
       { player1: "curaçao", hour: "17:00", player2: "costa-do-marfim" },
@@ -162,7 +162,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "26/06",
+    date: "26-06",
     day: "Sexta",
     games: [
       { player1: "norway", hour: "16:00", player2: "france" },
@@ -174,7 +174,7 @@ export const calendar: Card[] = [
     ],
   },
   {
-    date: "27/06",
+    date: "27-06",
     day: "Sábado",
     games: [
       { player1: "panama", hour: "18:00", player2: "england" },
