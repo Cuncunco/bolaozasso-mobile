@@ -1,6 +1,13 @@
 import { useRouter } from "expo-router";
-import { Center, Heading, Text, VStack, useToast } from "native-base";
+import { Center, Text, VStack, useToast, ScrollView } from "native-base";
 import { useContext, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
+
 import Logo from "../../assets/images/logo.svg";
 import { Button } from "../../components/button";
 import { Input } from "../../components/Input";
@@ -11,31 +18,23 @@ export default function Register() {
   const toast = useToast();
   const { signUp } = useContext(AuthContext);
 
-  const [name, setName] = useState<string>("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleRegister() {
     try {
       setIsLoading(true);
 
-      await signUp(name.trim() ? name.trim() : undefined, email, password);
-
-      toast.show({
-        title: "Conta criada com sucesso",
-        placement: "top",
-        bgColor: "green.500",
-      });
+      await signUp(name, email, password);
 
       router.replace("/(tabs)/pools");
     } catch (error: any) {
-      console.log("REGISTER ERROR:", error?.response?.data || error);
-
-      // Mantendo simples: mostra mensagem padrão
       toast.show({
-        title: "Não foi possível criar sua conta",
+        title: "Não foi possível criar a conta",
         placement: "top",
         bgColor: "red.500",
       });
@@ -45,48 +44,65 @@ export default function Register() {
   }
 
   return (
-    <Center flex={1} bgColor="gray.900" p={7}>
-      <Logo width={300} height={200} />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          flex={1}
+          bgColor="gray.900"
+          contentContainerStyle={{ flexGrow: 1, padding: 28 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Center flex={1}>
+            <Logo width={300} height={200} />
 
-      <Heading color="white" mt={6} mb={6}>
-        Criar conta
-      </Heading>
+            <VStack w="100%" mt={8} space={3}>
+              <Input
+                placeholder="Nome"
+                value={name}
+                onChangeText={setName}
+              />
 
-      <VStack w="100%" space={3}>
-        <Input
-          placeholder="Nome (opcional)"
-          autoCapitalize="words"
-          value={name}
-          onChangeText={setName}
-        />
+              <Input
+                placeholder="E-mail"
+                autoCapitalize="none"
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
+              />
 
-        <Input
-          placeholder="E-mail"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
+              <Input
+                placeholder="Senha"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+                rightIcon={showPassword ? "eye-off" : "eye"}
+                onTogglePassword={() => setShowPassword((prev) => !prev)}
+              />
 
-        <Input
-          placeholder="Senha (mínimo 6)"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+              <Button
+                title="CRIAR CONTA"
+                onPress={handleRegister}
+                isLoading={isLoading}
+                isDisabled={isLoading}
+              />
 
-        <Button title="CRIAR CONTA" isLoading={isLoading} onPress={handleRegister} />
+              <Button
+                title="JÁ TENHO CONTA"
+                type="SECONDARY"
+                onPress={() => router.push("/(auth)/signIn")}
+              />
+            </VStack>
 
-        <Button
-          title="JÁ TENHO CONTA"
-          type="SECONDARY"
-          onPress={() => router.replace("/(auth)/signIn")}
-        />
-      </VStack>
-
-      <Text color="gray.400" textAlign="center" mt={6}>
-        Ao criar a conta, você poderá entrar em bolões com código.
-      </Text>
-    </Center>
+            <Text color="gray.400" textAlign="center" mt={6}>
+              Crie sua conta para entrar nos bolões.
+            </Text>
+          </Center>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }

@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { PlusCircle, SoccerBall, CalendarBlank, MagnifyingGlass, House } from "phosphor-react-native";
 import { LogoTitle } from "../../components/LogoTitle";
+import { UserCircle } from "phosphor-react-native";
 
 export default function TabsLayout() {
   return (
@@ -11,16 +12,27 @@ export default function TabsLayout() {
         headerTitleAlign: "center",
         headerShadowVisible: false,
 
-        tabBarShowLabel: true, 
+        tabBarShowLabel: true,
         tabBarActiveTintColor: "#F7DD43",
         tabBarInactiveTintColor: "#9CA3AF",
-        tabBarStyle: { 
+        tabBarStyle: {
           position: "absolute",
           backgroundColor: "#1a1818f6",
           height: 70,
-          borderTopWidth: 0 }, 
+          borderTopWidth: 0
+        },
       }}
-      >
+    >
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Perfil",
+          tabBarIcon: ({ color, size }) => (
+            <UserCircle color={color} size={size} weight="fill" />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{

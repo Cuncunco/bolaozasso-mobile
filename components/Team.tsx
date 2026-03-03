@@ -7,6 +7,7 @@ interface Props {
   code: string;
   position: 'left' | 'right';
   onChangeText: (value: string) => void;
+  isDisabled?: boolean;
 }
 
 export function Team({ code, position, onChangeText }: Props) {

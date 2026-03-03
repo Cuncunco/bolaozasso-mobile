@@ -9,6 +9,7 @@ interface Props {
   showBackButton?: boolean;
   showShareButton?: boolean;
   onShare?: () => void;
+  onBack?: () => void; // ✅ nova prop
 }
 
 export function Header({
@@ -16,21 +17,42 @@ export function Header({
   showBackButton = false,
   showShareButton = false,
   onShare,
+  onBack,
 }: Props) {
   const router = useRouter();
 
   const EmptyBoxSpace = () => <Box w={6} h={6} />;
 
+  function handleBack() {
+    if (onBack) {
+      return onBack(); // ✅ usa back customizado
+    }
+
+    router.back(); // fallback padrão
+  }
+
   return (
-    <HStack w="full" h={24} bgColor="gray.800" alignItems="flex-end" pb={5} px={5}>
+    <HStack
+      w="full"
+      h={24}
+      bgColor="gray.800"
+      alignItems="flex-end"
+      pb={5}
+      px={5}
+    >
       <HStack w="full" alignItems="center" justifyContent="space-between">
         {showBackButton ? (
-          <ButtonIcon icon={CaretLeft} onPress={() => router.back()} />
+          <ButtonIcon icon={CaretLeft} onPress={handleBack} />
         ) : (
           <EmptyBoxSpace />
         )}
 
-        <Text color="white" fontFamily="medium" fontSize="md" textAlign="center">
+        <Text
+          color="white"
+          fontFamily="medium"
+          fontSize="md"
+          textAlign="center"
+        >
           {title}
         </Text>
 
@@ -38,7 +60,6 @@ export function Header({
           <ButtonIcon
             icon={Export}
             onPress={() => {
-              console.log("SHARE CLICKED");
               onShare?.();
             }}
           />

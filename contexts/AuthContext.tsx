@@ -1,7 +1,8 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { api } from "../lib/api";
-import { saveToken, getToken, deleteToken } from "../storage/token";
-import { saveUser, getUser, deleteUser } from "../storage/user";
+import { saveToken, deleteToken } from "../storage/token";
+import { saveUser, deleteUser } from "../storage/user";
+import * as ImagePicker from "expo-image-picker";
 
 interface UserProps {
   id: string;
@@ -13,13 +14,13 @@ interface UserProps {
 export interface AuthContextDataProps {
   user: UserProps | null;
   isUserLoading: boolean;
+
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (
-    name: string | undefined,
-    email: string,
-    password: string
-  ) => Promise<void>;
+  signUp: (name: string | undefined, email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+
+  // ✅ upload real
+  uploadAvatar: () => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -45,23 +46,11 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
 
-  // 🔥 BOOTSTRAP
+  // ✅ ao abrir o app: sempre começa deslogado
   useEffect(() => {
-    async function bootstrap() {
-      try {
-        const token = await getToken();
-        const storedUser = await getUser();
-
-        if (token && storedUser) {
-          setAuthHeader(token);
-          setUser(storedUser);
-        }
-      } finally {
-        setIsUserLoading(false);
-      }
-    }
-
-    bootstrap();
+    setAuthHeader(null);
+    setUser(null);
+    setIsUserLoading(false);
   }, []);
 
   async function signIn(email: string, password: string) {
@@ -78,16 +67,14 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
 
       setAuthHeader(data.token);
       setUser(data.user);
+    } catch (err) {
+      throw err;
     } finally {
       setIsUserLoading(false);
     }
   }
 
-  async function signUp(
-    name: string | undefined,
-    email: string,
-    password: string
-  ) {
+  async function signUp(name: string | undefined, email: string, password: string) {
     setIsUserLoading(true);
 
     try {
@@ -115,6 +102,55 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
     setUser(null);
   }
 
+  // ✅ UPLOAD de avatar (multipart)
+  async function uploadAvatar() {
+    if (!user) throw new Error("Você precisa estar logado.");
+
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      throw new Error("Permissão da galeria negada.");
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (result.canceled) return;
+
+    const asset = result.assets[0];
+    const uri = asset.uri;
+
+    const filename = uri.split("/").pop() || "avatar.jpg";
+    const ext = (filename.split(".").pop() || "jpg").toLowerCase();
+
+    const mime =
+      ext === "png"
+        ? "image/png"
+        : ext === "webp"
+        ? "image/webp"
+        : "image/jpeg";
+
+    const form = new FormData();
+    form.append("avatar", {
+      uri,
+      name: filename,
+      type: mime,
+    } as any);
+
+    const { data } = await api.post<{ user: UserProps }>("/me/avatar", form, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    // atualiza contexto + storage
+    await saveUser(data.user);
+    setUser(data.user);
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -123,6 +159,7 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
         signIn,
         signUp,
         signOut,
+        uploadAvatar,
       }}
     >
       {children}

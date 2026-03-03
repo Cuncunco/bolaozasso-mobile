@@ -72,7 +72,7 @@ export default function RootLayout() {
       <AuthContextProvider>
         <RouteGuard />
 
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container} edges={["right", "left", "bottom"]}>
           <View style={styles.content}>
             <Slot />
           </View>
