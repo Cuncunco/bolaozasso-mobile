@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Heading, Text, VStack, useToast } from "native-base";
+import { Center, Heading, Text, VStack, useToast } from "native-base";
 import Logo from "../../assets/images/logo.svg";
 import { Header } from "../../components/Header";
 import { Input } from "../../components/Input";
@@ -62,13 +62,15 @@ export default function New() {
           <Heading color="white" fontSize="xl" my={8} textAlign="center">
             Crie seu proprio bolão da copa e compartilhe entre amigos!
           </Heading>
-          <Input mb={2} placeholder="Qual nome do seu bolão?" 
+          <Input mb={2} w={500} placeholder="Qual nome do seu bolão?" 
           onChangeText={setTitle}
           value={title}
+          textAlign="center"
           />
           <Button title="Criar meu bolão" 
           onPress={handlePoolCreate}
           isLoading={isLoading}
+          w={500}
           />
           <Text color="gray.200" fontSize="sm" textAlign="center" px={10} mt={4}>
             Após criar seu bolão, você receberá um código único que poderá usar

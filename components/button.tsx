@@ -1,11 +1,13 @@
-import { Button as ButtonNativeBase, IButtonProps, Text } from 'native-base';
+import { Button as ButtonNativeBase, IButtonProps, Text } from "native-base";
 
 interface Props extends IButtonProps {
   title: string;
-  type?: 'PRIMARY' | 'SECONDARY';
+  type?: "PRIMARY" | "SECONDARY";
 }
 
-export function Button({ title, type = 'PRIMARY', ...rest }: Props) {
+export function Button({ title, type = "PRIMARY", ...rest }: Props) {
+  const isSecondary = type === "SECONDARY";
+
   return (
     <ButtonNativeBase
       w="full"
@@ -13,22 +15,29 @@ export function Button({ title, type = 'PRIMARY', ...rest }: Props) {
       rounded="sm"
       fontSize="md"
       textTransform="uppercase"
-      bg={type === 'SECONDARY' ? 'red.500' : "yellow.500"}
+      bg={isSecondary ? "red.500" : "yellow.500"}
+
+      _hover={{
+        bg: isSecondary ? "red.600" : "yellow.600" // 👈 hover mais escuro
+      }}
+
       _pressed={{
-        bg: type === 'SECONDARY' ? "red.400" : "yellow.600"
+        bg: isSecondary ? "red.700" : "yellow.700",
       }}
+
       _loading={{
-        _spinner: { color: "black" }
+        _spinner: { color: "black" },
       }}
+
       {...rest}
     >
       <Text
         fontSize="sm"
         fontFamily="heading"
-        color={type === 'SECONDARY' ? 'white' : "black"}
+        color={isSecondary ? "white" : "black"}
       >
         {title}
       </Text>
-    </ButtonNativeBase >
+    </ButtonNativeBase>
   );
 }

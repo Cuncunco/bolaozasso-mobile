@@ -1,8 +1,8 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { api } from "../lib/api";
-import { saveToken, deleteToken, getToken } from "../storage/token";
-import { saveUser, deleteUser, getUser } from "../storage/user";
 import * as ImagePicker from "expo-image-picker";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { api, withRetry } from "../lib/api";
+import { deleteToken, getToken, saveToken } from "../storage/token";
+import { deleteUser, getUser, saveUser } from "../storage/user";
 
 interface UserProps {
   id: string;
@@ -16,7 +16,11 @@ export interface AuthContextDataProps {
   isUserLoading: boolean;
 
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (name: string | undefined, email: string, password: string) => Promise<void>;
+  signUp: (
+    name: string | undefined,
+    email: string,
+    password: string
+  ) => Promise<void>;
   signOut: () => Promise<void>;
 
   uploadAvatar: () => Promise<void>;
@@ -45,7 +49,6 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
 
-  // ✅ ao abrir o app: carregar token + user do storage (não “forçar deslogado”)
   useEffect(() => {
     async function loadAuth() {
       try {
@@ -66,10 +69,14 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
     setIsUserLoading(true);
 
     try {
-      const { data } = await api.post<AuthResponse>("/login", {
-        email,
-        password,
-      });
+      const { data } = await withRetry(
+        () =>
+          api.post<AuthResponse>("/login", {
+            email,
+            password,
+          }),
+        { retries: 2, delayMs: 1400 }
+      );
 
       await saveToken(data.token);
       await saveUser(data.user);
@@ -80,6 +87,7 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
       console.log("SIGN IN ERROR:", {
         status: err?.response?.status,
         data: err?.response?.data,
+        message: err?.message,
       });
       throw err;
     } finally {
@@ -87,22 +95,27 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
     }
   }
 
-  // ✅ cadastro: cria em /users e depois faz login
   async function signUp(name: string | undefined, email: string, password: string) {
     setIsUserLoading(true);
 
     try {
-      await api.post("/users", {
-        name,
-        email,
-        password,
-      });
+      // No seu backend o cadastro é /register (pelo print do Insomnia)
+      await withRetry(
+        () =>
+          api.post("/register", {
+            name,
+            email,
+            password,
+          }),
+        { retries: 2, delayMs: 1400 }
+      );
 
       await signIn(email, password);
     } catch (err: any) {
       console.log("SIGN UP ERROR:", {
         status: err?.response?.status,
         data: err?.response?.data,
+        message: err?.message,
       });
       throw err;
     } finally {
@@ -155,11 +168,15 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
       type: mime,
     } as any);
 
-    const { data } = await api.post<{ user: UserProps }>("/me/avatar", form, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const { data } = await withRetry(
+      () =>
+        api.post<{ user: UserProps }>("/me/avatar", form, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }),
+      { retries: 2, delayMs: 1400 }
+    );
 
     await saveUser(data.user);
     setUser(data.user);

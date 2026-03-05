@@ -1,15 +1,39 @@
-import * as SecureStore from "expo-secure-store";
+// storage/token.ts
+import { Platform } from "react-native";
 
-const TOKEN_KEY = "auth_token";
+const TOKEN_KEY = "bolaozasso_token";
 
-export async function saveToken(token: string) {
-  await SecureStore.setItemAsync(TOKEN_KEY, token);
+async function getWebToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+async function saveWebToken(token: string) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+async function deleteWebToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+async function getNativeToken() {
+  const SecureStore = await import("expo-secure-store");
+  return SecureStore.getItemAsync(TOKEN_KEY);
+}
+async function saveNativeToken(token: string) {
+  const SecureStore = await import("expo-secure-store");
+  return SecureStore.setItemAsync(TOKEN_KEY, token);
+}
+async function deleteNativeToken() {
+  const SecureStore = await import("expo-secure-store");
+  return SecureStore.deleteItemAsync(TOKEN_KEY);
 }
 
 export async function getToken() {
-  return await SecureStore.getItemAsync(TOKEN_KEY);
+  return Platform.OS === "web" ? getWebToken() : getNativeToken();
+}
+
+export async function saveToken(token: string) {
+  return Platform.OS === "web" ? saveWebToken(token) : saveNativeToken(token);
 }
 
 export async function deleteToken() {
-  await SecureStore.deleteItemAsync(TOKEN_KEY);
+  return Platform.OS === "web" ? deleteWebToken() : deleteNativeToken();
 }

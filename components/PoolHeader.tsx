@@ -1,45 +1,55 @@
-import { Heading, HStack, Text, VStack } from 'native-base';
+import { HStack, Text, VStack } from "native-base";
+import { ParticipantsAvatars } from "./ParticipantsAvatars";
 
-import { PoolPros } from './PoolCard';
-import { Participants } from './Participants';
+type PoolHeaderData = {
+  title: string;
+  code: string;
+  participants: Array<{
+    id: string; // id do participant
+    user: {
+      avatarUrl: string | null;
+      // se você tiver name/id no user, melhor ainda:
+      id?: string;
+      name?: string | null;
+    };
+  }>;
+  _count: { participants: number };
+};
 
 interface Props {
-  data: PoolPros;
+  data: PoolHeaderData;
 }
 
 export function PoolHeader({ data }: Props) {
+  // ✅ transforma participants em array de users pro componente
+  const users = (data.participants ?? []).map((p, index) => ({
+    id: p.user.id ?? p.id ?? String(index),
+    avatarUrl: p.user.avatarUrl,
+    name: p.user.name ?? null,
+  }));
+
   return (
     <HStack
       w="full"
-      h={20}
-      bgColor="transparent"
-      borderBottomWidth={1}
-      borderBottomColor="gray.600"
       justifyContent="space-between"
       alignItems="center"
-      mb={3}
-      p={4}
+      mb={5}
     >
       <VStack>
-        <Heading color="white" fontSize="md" fontFamily="heading">
+        <Text color="white" fontFamily="heading" fontSize="md">
           {data.title}
-        </Heading>
+        </Text>
 
-        <HStack>
-          <Text color="gray.200" fontSize="xs" mr={1}>
-            Código:
-          </Text>
-
-          <Text color="gray.200" fontSize="xs" fontFamily="heading">
+        <Text color="gray.200" fontSize="sm">
+          Código:{" "}
+          <Text color="gray.100" fontFamily="heading">
             {data.code}
           </Text>
-        </HStack>
+        </Text>
       </VStack>
 
-      <Participants
-        count={data._count?.participants}
-        participants={data.participants}
-      />
+      {/* ✅ 3 avatares + excedentes */}
+      <ParticipantsAvatars users={users} max={3} />
     </HStack>
   );
 }

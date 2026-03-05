@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Center, Text, VStack, useToast, ScrollView } from "native-base";
+import { Box, Center, Text, VStack, useToast, ScrollView } from "native-base";
 import { useContext, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -25,6 +25,8 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const isWeb = Platform.OS === "web";
+
   async function handleRegister() {
     try {
       setIsLoading(true);
@@ -43,66 +45,72 @@ export default function Register() {
     }
   }
 
+  const content = (
+    <ScrollView
+      flex={1}
+      bgColor="gray.900"
+      contentContainerStyle={{ flexGrow: 1, padding: 28 }}
+      keyboardShouldPersistTaps="handled"
+    >
+      {/* frame igual tabs: limita largura e centraliza */}
+      <Box w="100%" maxW={1500} alignSelf="center" flex={1}>
+        <Center flex={1}>
+          <Logo width={300} height={200} />
+
+          <VStack w="100%" mt={8} space={3} maxW={520}>
+            <Input placeholder="Nome" value={name} onChangeText={setName} />
+
+            <Input
+              placeholder="E-mail"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
+
+            <Input
+              placeholder="Senha"
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+              rightIcon={showPassword ? "eye-off" : "eye"}
+              onTogglePassword={() => setShowPassword((prev) => !prev)}
+            />
+
+            <Button
+              title="CRIAR CONTA"
+              onPress={handleRegister}
+              isLoading={isLoading}
+              isDisabled={isLoading}
+            />
+
+            <Button
+              title="JÁ TENHO CONTA"
+              type="SECONDARY"
+              onPress={() => router.push("/(auth)/signIn")}
+            />
+          </VStack>
+
+          <Text color="gray.400" textAlign="center" mt={6}>
+            Crie sua conta para entrar nos bolões.
+          </Text>
+        </Center>
+      </Box>
+    </ScrollView>
+  );
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView
-          flex={1}
-          bgColor="gray.900"
-          contentContainerStyle={{ flexGrow: 1, padding: 28 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Center flex={1}>
-            <Logo width={300} height={200} />
-
-            <VStack w="100%" mt={8} space={3}>
-              <Input
-                placeholder="Nome"
-                value={name}
-                onChangeText={setName}
-              />
-
-              <Input
-                placeholder="E-mail"
-                autoCapitalize="none"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-              />
-
-              <Input
-                placeholder="Senha"
-                secureTextEntry={!showPassword}
-                value={password}
-                onChangeText={setPassword}
-                rightIcon={showPassword ? "eye-off" : "eye"}
-                onTogglePassword={() => setShowPassword((prev) => !prev)}
-              />
-
-              <Button
-                title="CRIAR CONTA"
-                onPress={handleRegister}
-                isLoading={isLoading}
-                isDisabled={isLoading}
-              />
-
-              <Button
-                title="JÁ TENHO CONTA"
-                type="SECONDARY"
-                onPress={() => router.push("/(auth)/signIn")}
-              />
-            </VStack>
-
-            <Text color="gray.400" textAlign="center" mt={6}>
-              Crie sua conta para entrar nos bolões.
-            </Text>
-          </Center>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+      {/* no web NÃO use TouchableWithoutFeedback (ele tira foco do input) */}
+      {isWeb ? content : (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          {content}
+        </TouchableWithoutFeedback>
+      )}
     </KeyboardAvoidingView>
   );
 }

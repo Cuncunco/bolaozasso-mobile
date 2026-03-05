@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const USER_KEY = "@bolaozasso:user";
+const USER_KEY = "@bolaozasso_user";
 
 type UserProps = {
   id: string;

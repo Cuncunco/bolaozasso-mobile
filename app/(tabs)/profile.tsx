@@ -26,7 +26,7 @@ export default function Profile() {
     <VStack flex={1} bgColor="gray.900">
       <Header title="Perfil" />
 
-      <VStack px={5} pt={6} space={6}>
+      <VStack px={5} pt={6} space={6} alignItems="center">
         <Center>
           <Image
             source={{
@@ -44,9 +44,9 @@ export default function Profile() {
           <Text color="gray.400">{user?.email}</Text>
         </Center>
 
-        <Button title="Trocar foto" onPress={handleUpload} isLoading={isUploading} isDisabled={isUploading}/>
+        <Button title="Trocar foto" onPress={handleUpload} isLoading={isUploading} isDisabled={isUploading} w={500}/>
 
-        <Button title="Sair da conta" type="SECONDARY" onPress={signOut} />
+        <Button title="Sair da conta" type="SECONDARY" onPress={signOut} w={500}/>
       </VStack>
     </VStack>
   );

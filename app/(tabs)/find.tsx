@@ -111,12 +111,15 @@ export default function Find() {
             placeholder="Qual código do bolão?"
             autoCapitalize="characters"
             onChangeText={setCode}
+            width={500}
+            textAlign="center"
           />
 
           <Button
             title="BUSCAR BOLÃO"
             isLoading={isLoading}
             onPress={handleJoinPool}
+            width={500}
           />
         </VStack>
       </VStack>

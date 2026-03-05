@@ -1,6 +1,7 @@
 import { Text, HStack, Box } from "native-base";
 import { CaretLeft, Export } from "phosphor-react-native";
 import { useRouter } from "expo-router";
+import { Platform } from "react-native";
 
 import { ButtonIcon } from "./ButtonIcon";
 
@@ -9,7 +10,7 @@ interface Props {
   showBackButton?: boolean;
   showShareButton?: boolean;
   onShare?: () => void;
-  onBack?: () => void; // ✅ nova prop
+  onBack?: () => void;
 }
 
 export function Header({
@@ -24,21 +25,20 @@ export function Header({
   const EmptyBoxSpace = () => <Box w={6} h={6} />;
 
   function handleBack() {
-    if (onBack) {
-      return onBack(); // ✅ usa back customizado
-    }
-
-    router.back(); // fallback padrão
+    if (onBack) return onBack();
+    router.back();
   }
 
   return (
     <HStack
       w="full"
-      h={24}
       bgColor="gray.800"
-      alignItems="flex-end"
-      pb={5}
       px={5}
+      // no mobile dá um respiro pro status bar
+      // no web fica colado no topo
+      pt={Platform.OS === "web" ? 3 : 10}
+      pb={3}
+      alignItems="center"
     >
       <HStack w="full" alignItems="center" justifyContent="space-between">
         {showBackButton ? (
@@ -52,17 +52,13 @@ export function Header({
           fontFamily="medium"
           fontSize="md"
           textAlign="center"
+          numberOfLines={1}
         >
           {title}
         </Text>
 
         {showShareButton ? (
-          <ButtonIcon
-            icon={Export}
-            onPress={() => {
-              onShare?.();
-            }}
-          />
+          <ButtonIcon icon={Export} onPress={() => onShare?.()} />
         ) : (
           <EmptyBoxSpace />
         )}

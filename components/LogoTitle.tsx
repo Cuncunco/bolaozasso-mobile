@@ -10,5 +10,5 @@ export function LogoTitle() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { height: 40, justifyContent: "center" },
+  wrap: { height: 80, justifyContent: "center" },
 });
