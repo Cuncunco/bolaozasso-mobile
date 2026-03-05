@@ -2,7 +2,8 @@ import axios from "axios";
 import { getToken } from "../storage/token";
 
 export const api = axios.create({
-  baseURL: "http://192.168.1.35:3333",
+  baseURL: "https://bolaozasso-backend.onrender.com",
+  timeout: 20000,
 });
 
 export function setAuthToken(token: string) {
