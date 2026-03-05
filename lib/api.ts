@@ -6,10 +6,6 @@ export const api = axios.create({
   timeout: 20000,
 });
 
-export function setAuthToken(token: string) {
-  api.defaults.headers.common.Authorization = `Bearer ${token}`;
-}
-
 api.interceptors.request.use(async (config) => {
   const token = await getToken();
   if (token) {

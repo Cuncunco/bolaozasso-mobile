@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { api } from "../lib/api";
-import { saveToken, deleteToken } from "../storage/token";
-import { saveUser, deleteUser } from "../storage/user";
+import { saveToken, deleteToken, getToken } from "../storage/token";
+import { saveUser, deleteUser, getUser } from "../storage/user";
 import * as ImagePicker from "expo-image-picker";
 
 interface UserProps {
@@ -19,7 +19,6 @@ export interface AuthContextDataProps {
   signUp: (name: string | undefined, email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 
-  // ✅ upload real
   uploadAvatar: () => Promise<void>;
 }
 
@@ -46,11 +45,21 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
 
-  // ✅ ao abrir o app: sempre começa deslogado
+  // ✅ ao abrir o app: carregar token + user do storage (não “forçar deslogado”)
   useEffect(() => {
-    setAuthHeader(null);
-    setUser(null);
-    setIsUserLoading(false);
+    async function loadAuth() {
+      try {
+        const token = await getToken();
+        const storedUser = await getUser();
+
+        if (token) setAuthHeader(token);
+        if (storedUser) setUser(storedUser);
+      } finally {
+        setIsUserLoading(false);
+      }
+    }
+
+    loadAuth();
   }, []);
 
   async function signIn(email: string, password: string) {
@@ -67,28 +76,35 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
 
       setAuthHeader(data.token);
       setUser(data.user);
-    } catch (err) {
+    } catch (err: any) {
+      console.log("SIGN IN ERROR:", {
+        status: err?.response?.status,
+        data: err?.response?.data,
+      });
       throw err;
     } finally {
       setIsUserLoading(false);
     }
   }
 
+  // ✅ cadastro: cria em /users e depois faz login
   async function signUp(name: string | undefined, email: string, password: string) {
     setIsUserLoading(true);
 
     try {
-      const { data } = await api.post<AuthResponse>("/register", {
+      await api.post("/users", {
         name,
         email,
         password,
       });
 
-      await saveToken(data.token);
-      await saveUser(data.user);
-
-      setAuthHeader(data.token);
-      setUser(data.user);
+      await signIn(email, password);
+    } catch (err: any) {
+      console.log("SIGN UP ERROR:", {
+        status: err?.response?.status,
+        data: err?.response?.data,
+      });
+      throw err;
     } finally {
       setIsUserLoading(false);
     }
@@ -102,7 +118,6 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
     setUser(null);
   }
 
-  // ✅ UPLOAD de avatar (multipart)
   async function uploadAvatar() {
     if (!user) throw new Error("Você precisa estar logado.");
 
@@ -146,7 +161,6 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
       },
     });
 
-    // atualiza contexto + storage
     await saveUser(data.user);
     setUser(data.user);
   }

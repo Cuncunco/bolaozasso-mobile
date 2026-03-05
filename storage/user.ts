@@ -2,13 +2,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const USER_KEY = "@bolaozasso:user";
 
-export async function saveUser(user: any) {
+type UserProps = {
+  id: string;
+  name?: string | null;
+  email: string;
+  avatarUrl?: string | null;
+};
+
+export async function saveUser(user: UserProps) {
   await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
-export async function getUser() {
+export async function getUser(): Promise<UserProps | null> {
   const data = await AsyncStorage.getItem(USER_KEY);
-  return data ? JSON.parse(data) : null;
+  if (!data) return null;
+
+  try {
+    return JSON.parse(data) as UserProps;
+  } catch {
+    return null;
+  }
 }
 
 export async function deleteUser() {
