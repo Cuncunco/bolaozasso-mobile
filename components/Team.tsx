@@ -1,45 +1,67 @@
-import { HStack } from 'native-base';
+import { HStack, Text } from "native-base";
 import CountryFlag from "react-native-country-flag";
 
-import { Input } from './Input';
+import { Input } from "./Input";
 
 interface Props {
   code: string;
-  position: 'left' | 'right';
-  onChangeText: (value: string) => void;
+  position: "left" | "right";
+  onChangeText?: (value: string) => void;
   isDisabled?: boolean;
+  value?: string;
+  showInput?: boolean;
 }
 
-export function Team({ code, position, onChangeText }: Props) {
+export function Team({
+  code,
+  position,
+  onChangeText,
+  isDisabled = false,
+  value,
+  showInput = true,
+}: Props) {
   return (
     <HStack alignItems="center">
-      {position === 'left' && (
+      {position === "left" && (
         <CountryFlag
           isoCode={code}
-          size={40} // 🔥 bandeira maior (antes era 25)
+          size={40}
           style={{ marginRight: 12 }}
         />
       )}
 
-      <Input
-        w={12} // 🔥 um pouco maior
-        h={10}
-        textAlign="center"
-        fontSize="sm"
-        keyboardType="numeric"
-        onChangeText={onChangeText}
-        borderWidth={2}          // 🔥 borda visível
-        borderColor="gray.500"   // 🔥 cor da borda
-        bg="gray.900"            // 🔥 fundo para destacar
-        _focus={{
-          borderColor: "yellow.500"
-        }}
-      />
+      {showInput ? (
+        <Input
+          w={12}
+          h={10}
+          textAlign="center"
+          fontSize="sm"
+          keyboardType="numeric"
+          onChangeText={onChangeText}
+          isDisabled={isDisabled}
+          borderWidth={2}
+          borderColor="gray.500"
+          bg="gray.900"
+          _focus={{
+            borderColor: "yellow.500",
+          }}
+        />
+      ) : (
+        <Text
+          w={12}
+          textAlign="center"
+          fontSize="2xl"
+          fontFamily="heading"
+          color="white"
+        >
+          {value ?? "-"}
+        </Text>
+      )}
 
-      {position === 'right' && (
+      {position === "right" && (
         <CountryFlag
           isoCode={code}
-          size={40} // 🔥 bandeira maior
+          size={40}
           style={{ marginLeft: 12 }}
         />
       )}

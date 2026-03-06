@@ -1,57 +1,84 @@
-import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
-import { Heading, HStack, Text, VStack } from 'native-base';
-
-import { Participants, ParticipantProps } from './Participants';
+import { HStack, Text, VStack, Pressable, Avatar } from "native-base";
 
 export interface PoolProps {
   id: string;
-  code: string;
   title: string;
-  ownerId: string;
-  createdAt: string;
-  owner: {
-    name: string;
-  },
-  participants: ParticipantProps[];
+  code: string;
+  owner?: {
+    name: string | null;
+  };
+  participants: {
+    id: string;
+    user: {
+      avatarUrl: string | null;
+    };
+  }[];
   _count: {
     participants: number;
-  }
+  };
 }
 
-interface Props extends TouchableOpacityProps {
+interface Props {
   data: PoolProps;
+  onPress: () => void;
 }
 
-export function PoolCard({ data, ...rest }: Props) {
-  return (
-    <TouchableOpacity {...rest}>
-      <HStack
-        w="full"
-        h={20}
-        bgColor="gray.800"
-        borderBottomWidth={3}
-        borderBottomColor="yellow.500"
-        justifyContent="space-between"
-        alignItems="center"
-        rounded="sm"
-        mb={3}
-        p={4}
-      >
-        <VStack>
-          <Heading color="white" fontSize="md" fontFamily="heading">
-            {data.title}
-          </Heading>
+export function PoolCard({ data, onPress }: Props) {
+  const participants = data.participants ?? [];
 
-          <Text color="gray.200" fontSize="xs">
-            Criado por {data.owner?.name ?? "—"}
+  const visibleParticipants = participants.slice(0, 3);
+  const extraCount = participants.length - 3;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      bgColor="gray.800"
+      rounded="sm"
+      borderBottomWidth={2}
+      borderBottomColor="yellow.500"
+      p={4}
+      mb={3}
+    >
+      <HStack justifyContent="space-between" alignItems="center">
+        <VStack>
+          <Text color="gray.100" fontSize="md" fontFamily="heading">
+            {data.title}
+          </Text>
+
+          <Text color="gray.300" fontSize="sm">
+            Criado por {data.owner?.name ?? "Desconhecido"}
           </Text>
         </VStack>
 
-        <Participants
-          count={data._count.participants}
-          participants={data.participants}
-        />
+        <HStack space={-2}>
+          {visibleParticipants.map((participant) => (
+            <Avatar
+              key={participant.id}
+              source={{
+                uri:
+                  participant.user.avatarUrl ??
+                  "https://i.pravatar.cc/100",
+              }}
+              borderWidth={2}
+              borderColor="gray.800"
+              size="sm"
+            />
+          ))}
+
+          {extraCount > 0 && (
+            <Avatar
+              bg="gray.600"
+              size="sm"
+              borderWidth={2}
+              borderColor="gray.800"
+            >
+              <Text color="white" fontSize="xs">
+                +{extraCount}
+              </Text>
+            </Avatar>
+          )}
+        </HStack>
       </HStack>
-    </TouchableOpacity>
+    </Pressable>
   );
 }

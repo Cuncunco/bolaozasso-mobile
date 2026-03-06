@@ -1,5 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { api, withRetry } from "../lib/api";
 import { deleteToken, getToken, saveToken } from "../storage/token";
 import { deleteUser, getUser, saveUser } from "../storage/user";
@@ -14,7 +15,6 @@ interface UserProps {
 export interface AuthContextDataProps {
   user: UserProps | null;
   isUserLoading: boolean;
-
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (
     name: string | undefined,
@@ -22,7 +22,6 @@ export interface AuthContextDataProps {
     password: string
   ) => Promise<void>;
   signOut: () => Promise<void>;
-
   uploadAvatar: () => Promise<void>;
 }
 
@@ -95,11 +94,14 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
     }
   }
 
-  async function signUp(name: string | undefined, email: string, password: string) {
+  async function signUp(
+    name: string | undefined,
+    email: string,
+    password: string
+  ) {
     setIsUserLoading(true);
 
     try {
-      // No seu backend o cadastro é /register (pelo print do Insomnia)
       await withRetry(
         () =>
           api.post("/register", {
@@ -140,7 +142,7 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -151,22 +153,30 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
     const asset = result.assets[0];
     const uri = asset.uri;
 
-    const filename = uri.split("/").pop() || "avatar.jpg";
-    const ext = (filename.split(".").pop() || "jpg").toLowerCase();
-
-    const mime =
-      ext === "png"
-        ? "image/png"
-        : ext === "webp"
-        ? "image/webp"
-        : "image/jpeg";
-
     const form = new FormData();
-    form.append("avatar", {
-      uri,
-      name: filename,
-      type: mime,
-    } as any);
+
+    if (Platform.OS === "web") {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      form.append("avatar", blob, "avatar.jpg");
+    } else {
+      const filename = uri.split("/").pop() || "avatar.jpg";
+      const ext = (filename.split(".").pop() || "jpg").toLowerCase();
+
+      const mime =
+        ext === "png"
+          ? "image/png"
+          : ext === "webp"
+          ? "image/webp"
+          : "image/jpeg";
+
+      form.append("avatar", {
+        uri,
+        name: filename,
+        type: mime,
+      } as any);
+    }
 
     const { data } = await withRetry(
       () =>
@@ -175,7 +185,7 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
             "Content-Type": "multipart/form-data",
           },
         }),
-      { retries: 2, delayMs: 1400 }
+      { retries: 1, delayMs: 1200 }
     );
 
     await saveUser(data.user);

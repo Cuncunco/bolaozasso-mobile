@@ -114,7 +114,7 @@ export function Guesses({ poolId, isOwner = false }: Props) {
 
         toast.show({ title: "Palpite enviado!", placement: "top", bgColor: "green.500" });
   } catch (e) {
-    toast.show({ title: "Não foi possível enviar o palpite", placement: "top", bgColor: "red.500" });
+    toast.show({ title: "O jogo já foi finalizado.", placement: "top", bgColor: "red.500" });
   } finally {
     setLoadingGameId(null);
   }

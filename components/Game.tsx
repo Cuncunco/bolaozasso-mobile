@@ -31,8 +31,6 @@ interface Props {
   onGuessConfirm: () => void;
   setFirstTeamPoints: (value: string) => void;
   setSecondTeamPoints: (value: string) => void;
-
-  // ✅ novas props
   isLocked?: boolean;
   result?: ResultProps | null;
 }
@@ -47,6 +45,8 @@ export function Game({
 }: Props) {
   const { colors, sizes } = useTheme();
 
+  const showResultOnly = !!result;
+
   return (
     <VStack
       w="full"
@@ -60,21 +60,29 @@ export function Game({
       opacity={isLocked ? 0.9 : 1}
     >
       <Text color="gray.100" fontFamily="heading" fontSize="sm">
-        {getName(data.firstTeamCountryCode)} vs. {getName(data.secondTeamCountryCode)}
+        {getName(data.firstTeamCountryCode)} vs.{" "}
+        {getName(data.secondTeamCountryCode)}
       </Text>
 
-      {/* se você tiver data no data.date depois, dá pra formatar certinho */}
       <Text color="gray.200" fontSize="xs">
         22 de Novembro de 2022 às 16:00h
       </Text>
 
-      <HStack mt={4} w="full" justifyContent="space-between" alignItems="center">
+      <HStack
+        mt={4}
+        w="full"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Team
           code={data.firstTeamCountryCode}
           position="right"
           onChangeText={setFirstTeamPoints}
-          // ✅ trava input quando encerrado
-          isDisabled={isLocked}
+          isDisabled={isLocked || showResultOnly}
+          value={
+            showResultOnly ? String(result.firstTeamPoints) : undefined
+          }
+          showInput={!showResultOnly}
         />
 
         <X color={colors.gray[300]} size={sizes[6]} />
@@ -83,30 +91,38 @@ export function Game({
           code={data.secondTeamCountryCode}
           position="left"
           onChangeText={setSecondTeamPoints}
-          // ✅ trava input quando encerrado
-          isDisabled={isLocked}
+          isDisabled={isLocked || showResultOnly}
+          value={
+            showResultOnly ? String(result.secondTeamPoints) : undefined
+          }
+          showInput={!showResultOnly}
         />
       </HStack>
 
-      {/* ✅ Mostra resultado oficial */}
       {result && (
         <HStack mt={3} alignItems="center" space={2}>
           <LockSimple color={colors.gray[300]} size={sizes[4]} />
           <Text color="yellow.400" fontSize="xs" fontFamily="heading">
-            Resultado oficial: {result.firstTeamPoints} x {result.secondTeamPoints}
+            Resultado oficial: {result.firstTeamPoints} x{" "}
+            {result.secondTeamPoints}
           </Text>
         </HStack>
       )}
 
-      {/* ✅ Bloqueado: não mostra confirmar */}
       {isLocked ? (
         <Text color="gray.400" fontSize="xs" mt={3}>
           Palpites encerrados.
         </Text>
       ) : (
-        // Só mostra confirmar se ainda não tem palpite salvo e não está bloqueado
-        !data.guess && (
-          <Button size="xs" w="full" bgColor="green.500" mt={4} onPress={onGuessConfirm} >
+        !data.guess &&
+        !showResultOnly && (
+          <Button
+            size="xs"
+            w="full"
+            bgColor="green.500"
+            mt={4}
+            onPress={onGuessConfirm}
+          >
             <HStack alignItems="center">
               <Text color="white" fontSize="xs" fontFamily="heading" mr={3}>
                 CONFIRMAR PALPITE

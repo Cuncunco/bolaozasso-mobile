@@ -4,7 +4,7 @@ import { FlatList } from "react-native";
 import { Button } from "../../components/button";
 import { Header } from "../../components/Header";
 import { api } from "@/lib/api";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { PoolCard, PoolProps } from "@/components/PoolCard";
 import { Loading } from "@/components/Loading";
 import { EmptyPoolList } from "@/components/EmptyPoolList";
@@ -24,7 +24,7 @@ export default function Pools() {
       const response = await api.get("/pools");
       setPools(response.data.pools);
     } catch (error) {
-      console.log(error);
+      console.log("FETCH POOLS ERROR:", error);
 
       toast.show({
         title: "Não foi possível carregar os bolões",
@@ -44,7 +44,7 @@ export default function Pools() {
 
   return (
     <VStack flex={1} bgColor="gray.900">
-      <Header title="Meus bolões" onShare={() => {}}/>
+      <Header title="Meus bolões" onShare={() => {}} />
 
       <VStack
         mt={6}
@@ -57,7 +57,7 @@ export default function Pools() {
         <Button
           title="Buscar bolão por código"
           leftIcon={<Icon as={Octicons} name="search" color="black" />}
-          onPress={() => router.push("/(tabs)/find")}
+          onPress={() => router.push("/find")}
         />
       </VStack>
 
@@ -72,7 +72,7 @@ export default function Pools() {
               data={item}
               onPress={() =>
                 router.push({
-                  pathname: "/(tabs)/details",
+                  pathname: "/details",
                   params: { id: item.id },
                 })
               }
